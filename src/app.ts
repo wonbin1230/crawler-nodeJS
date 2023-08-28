@@ -1,12 +1,14 @@
-import express, { Express } from "express";
+import express from "express";
+import type { Express } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { join } from "path";
 import { createServer } from "http";
-import { youtubeRoute } from "./routes/youtube";
+import type { Server } from "http";
+import { youtubeRoute } from "./routes/youtubeRoute";
 
 const app: Express = express();
-const server = createServer(app);
+const server: Server = createServer(app);
 const port: number = 3000;
 
 app.use(express.json());

@@ -1,13 +1,13 @@
 {
     "compilerOptions": {
-        "target": "ES6",
+        "target": "ES2022",
         "module": "CommonJS",
         "allowSyntheticDefaultImports": true,
         "moduleResolution": "node",
         "skipLibCheck": true,
         "lib": [
             "DOM",
-            "ES2020"
+            "ES2022"
         ],
         "allowJs": true,
         "forceConsistentCasingInFileNames": true,
