@@ -91,37 +91,35 @@ export class YoutubeService {
 
     async download(videoFormat: videoFormat, audioFormat: videoFormat, folderPath: string, fileName: string): Promise<void> {
         try {
-            // if (!audioFormat) {
-            //     ffmpeg(videoFormat.url)
-            //         .save(`${folderPath}\\${fileName}.mp4`)
-            //         .on("error", (err: Error) => {
-            //             console.log(err);
-            //         })
-            //         .on("end", () => {
-            //             console.log("OK");
-            //         });
-            // }
-            // else {
-            //     ffmpeg(videoFormat.url)
-            //         .addInput(audioFormat.url)
-            //         .addOptions(["-map 0:v", "-map 1:a", "-c:v copy"])
-            //         .format("mp4")
-            //         .save(`${folderPath}/${fileName}.mp4`)
-            //         .on("error", (err: Error) => {
-            //             console.log(err);
-            //         })
-            //         .on("end", () => {
-            //             console.log("OK");
-            //         });
-            // }
-            ffmpeg(videoFormat.url)
-                .save(`${folderPath}\\${fileName}.mp4`)
-                .on("error", (err: Error) => {
-                    console.log(err);
-                })
-                .on("end", () => {
-                    console.log("OK");
-                });
+            if (!audioFormat) {
+                ffmpeg(videoFormat.url)
+                    .save(`${folderPath}/${fileName}`)
+                    .on("error", (err: Error) => {
+                        console.log(err);
+                    })
+                    .on("progress", (progress) => {
+                        console.log("Processing: " + progress.percent + "% done");
+                    })
+                    .on("end", () => {
+                        console.log("OK");
+                    });
+            }
+            else {
+                ffmpeg(videoFormat.url)
+                    .addInput(audioFormat.url)
+                    .addOptions(["-map 0:v", "-map 1:a", "-c:v copy"])
+                    .format("mp4")
+                    .save(`${folderPath}/${fileName}`)
+                    .on("error", (err: Error) => {
+                        console.log(err);
+                    })
+                    .on("progress", (progress) => {
+                        console.log("Processing: " + progress.percent + "% done");
+                    })
+                    .on("end", () => {
+                        console.log("OK");
+                    });
+            }
         }
         catch (error) {
             console.log(error);
