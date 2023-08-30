@@ -4,7 +4,7 @@ import { YoutubeService } from "../services/youtubeService";
 export const youtubeDownload = async (req: Request, res: Response): Promise<void> => {
     try {
         const youtube: YoutubeService = new YoutubeService(req.body.url);
-        await youtube.goPage();
+        await youtube.main();
         res.send("OK");
     }
     catch (error) {
