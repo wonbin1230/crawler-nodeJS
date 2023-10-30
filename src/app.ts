@@ -10,7 +10,7 @@ import { youtubeRoute } from "./routes/youtubeRoute";
 
 const app: Express = express();
 const server: Server = createServer(app);
-const port: number = Number(process.env.PORT) | 5000;
+const port: number = Number(process.env.PORT) || 5000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
