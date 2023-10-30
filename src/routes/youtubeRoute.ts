@@ -1,6 +1,7 @@
-import express from "express";
 import type { Router } from "express";
-import { youtubeDownload } from "../controller/youtubeController";
+
+import express from "express";
+import { genPreview, getPreview, download } from "../controller/youtubeController";
 
 class YoutubeRoute {
 	router: Router;
@@ -10,7 +11,10 @@ class YoutubeRoute {
 	}
 
 	initializeRoute(): void {
-		this.router.post("/", youtubeDownload);
+        this.router.get("/preview/:path", getPreview)
+                    .post("/preview", genPreview);
+
+		this.router.post("/download", download);
 	}
 }
 
