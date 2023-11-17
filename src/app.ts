@@ -13,7 +13,7 @@ import { ytSocket } from "./socket/youtubeSocket";
 const app: Express = express();
 const server: httpServer = createServer(app);
 const port: number = Number(process.env.PORT) || 5000;
-ytSocket(new Server(server, { path: "/websocket" }));
+ytSocket(new Server(server));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
