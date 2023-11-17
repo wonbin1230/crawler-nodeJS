@@ -1,22 +1,16 @@
-import type { videoFormat, videoInfo } from "ytdl-core";
+import type { videoFormat } from "ytdl-core";
+import type { Stream } from "stream";
 
 export interface IFormatData {
 	videoFormat: videoFormat,
 	audioFormat?: videoFormat,
 }
 
-// export interface IFolderData {
-//     folderPath: string,
-//     folderName: string,
-// }
-
 export interface IPreviewData {
-    videoFolderID: string,
-    videoInfo: {
-        lengthSeconds: string,
-        videoItagList: IItagInfo[],
-        audioItagList: IItagInfo[],
-    },
+    videoStream: Stream,
+    lengthSeconds: string,
+    videoItagList: IItagInfo[],
+    audioItagList: IItagInfo[],
 }
 
 export interface IItagInfo {
@@ -33,6 +27,21 @@ export interface ItagTranslations {
     139: "48k",
     140: "128k",
     141: "256k",
+}
+
+export interface IDownloadRequest {
+    url: string,
+    range: {
+        start: number,
+        end: number,
+    },
+    mediaType: string,
+    itag: number,
+}
+
+export interface IDownloadResponse {
+    mediaType: string,
+    titleName: string,
 }
 
 export interface IDownloadData {

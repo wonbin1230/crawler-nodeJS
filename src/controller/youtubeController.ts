@@ -1,14 +1,14 @@
 import type { Request, Response } from "express";
 import type { IPreviewData, IDownloadData } from "../model/youtubeModal";
-import type { Stream } from "stream";
+import type { Readable } from "stream";
 
 import { YoutubeService } from "../services/youtubeService";
 import { minio, bucketName } from "../repository/minIO";
 
 export const genPreview = async (req: Request, res: Response): Promise<void> => {
     try {
-        const youtube: YoutubeService = new YoutubeService(req.body.url);
-        const result: IPreviewData = await youtube.genPreview();
+        const youtube: YoutubeService = new YoutubeService();
+        const result: IPreviewData = await youtube.genPreview(req.body.url);
         res.send(result);
     }
     catch (error) {
@@ -18,8 +18,8 @@ export const genPreview = async (req: Request, res: Response): Promise<void> => 
 
 export const getPreview = async (req: Request, res: Response): Promise<void> => {
     try {
-        const videoStream: Stream = await minio.getObject(bucketName, `${req.params.path}/video.mp4`);
-        const videoSize: number = (await minio.statObject(bucketName, `${req.params.path}/video.mp4`)).size;
+        const videoStream: Readable = await minio.getObject(bucketName, `tmp/${req.params.path}/video.mp4`);
+        const videoSize: number = (await minio.statObject(bucketName, `tmp/${req.params.path}/video.mp4`)).size;
         res.writeHead(206, {
             "Content-Range": `bytes 0-${videoSize - 1}/${videoSize}`,
             "Content-Length": videoSize,
@@ -34,9 +34,9 @@ export const getPreview = async (req: Request, res: Response): Promise<void> => 
 
 export const download = async (req: Request, res: Response): Promise<void> => {
     try {
-        const youtube: YoutubeService = new YoutubeService(req.body.url);
-        const result: IDownloadData = await youtube.download(req.body.range, req.body.mediaType, req.body.itag);
-        const mediaStream: Stream = await minio.getObject(bucketName, `${result.folderName}/${result.fileName}`);
+        const youtube: YoutubeService = new YoutubeService();
+        const result: IDownloadData = await youtube.download(req.body);
+        const mediaStream: Readable = await minio.getObject(bucketName, `${result.folderName}/${result.fileName}`);
         const mediaSize: number = (await minio.statObject(bucketName, `${result.folderName}/${result.fileName}`)).size;
         res.writeHead(200, {
             "Content-Length": mediaSize,
