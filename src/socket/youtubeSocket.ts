@@ -1,4 +1,5 @@
 import type { Server, Socket } from "socket.io";
+import type { Result } from "ytsr";
 import type { videoInfo } from "ytdl-core";
 import type { IFormatData, IPreviewData, IDownloadRequest, IDownloadResponse } from "../model/youtubeModal";
 import type { Readable } from "stream";
@@ -14,6 +15,12 @@ export const ytSocket = (io: Server): void => {
             console.log(`connecting with ID ${socket.id}`);
 
             const youtube: YoutubeService = new YoutubeService();
+
+            socket.on("req_searchKeyWord", async (keyWord: string) => {
+                socket.emit("status", "正在建立影片列表...");
+                const result: Result = await youtube.searchKeyWord(keyWord);
+                socket.emit("res_searchKeyWord", result);
+            });
 
             socket.on("req_genPreview", async (url: string) => {
                 socket.emit("status", "正在建立預覽影片...");

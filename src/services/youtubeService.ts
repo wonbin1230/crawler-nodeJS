@@ -1,3 +1,4 @@
+import type { Result, Filter as FilterYtsr } from "ytsr";
 import type { videoInfo, videoFormat, Filter } from "ytdl-core";
 import type { IFormatData, IPreviewData, IItagInfo, ItagTranslations, IDownloadRequest, IDownloadData } from "../model/youtubeModal";
 import type { CodecData, Progress } from "../model/ffmpegEventModal";
@@ -10,6 +11,7 @@ import { mkdirSync, rmSync, existsSync, createWriteStream } from "fs";
 import { join } from "path";
 import { v4 as uuidv4 } from "uuid";
 import { minio, bucketName } from "../repository/minIO";
+import ytsr from "ytsr";
 import ytdl, { getInfo, filterFormats, chooseFormat } from "ytdl-core";
 
 const previewItag: number[] = [18, 22, 37];
@@ -17,6 +19,19 @@ const videoItag: number[] = [37, 137, 22, 136, 18];
 const audioItag: number[] = [141, 140, 139];
 
 export class YoutubeService {
+    async searchKeyWord(keyWord: string): Promise<Result> {
+        try {
+            const filters: Map<string, Map<string, FilterYtsr>> = await ytsr.getFilters(keyWord);
+            const targetType: FilterYtsr = filters.get("Type").get("Video");
+            const result: Result = await ytsr(targetType.url, { limit: 98 });
+            return result;
+        }
+        catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+
     async genPreview(url: string): Promise<IPreviewData> {
         try {
             const videoItagList: IItagInfo[] = [];
@@ -125,7 +140,6 @@ export class YoutubeService {
                 videoStream.pipe(videoFile);
                 videoFile.on("error", (error: Error) => reject(error));
                 videoFile.on("finish", () => resolve("1"));
-                // await minio.putObject(bucketName, `${folderName}/video.mp4`, videoStream);
             }
             else if (!videoFormat) {
                 const audioStream: Stream = ytdl(url, { format: audioFormat });
@@ -133,7 +147,6 @@ export class YoutubeService {
                 audioStream.pipe(audioFile);
                 audioFile.on("error", (error: Error) => reject(error));
                 audioFile.on("finish", () => resolve("2"));
-                // await minio.putObject(bucketName, `${folderName}/audio.m4a`, audioStream);
             }
             else {
                 const videoStream: Stream = ytdl(url, { format: videoFormat });
@@ -145,8 +158,6 @@ export class YoutubeService {
                 videoFile.on("error", (error: Error) => reject(error));
                 audioFile.on("error", (error: Error) => reject(error));
                 audioFile.on("finish", () => resolve("3"));
-                // await minio.putObject(bucketName, `${folderName}/video.mp4`, videoStream);
-                // await minio.putObject(bucketName, `${folderName}/audio.m4a`, audioStream);
             }
         });
     }
@@ -203,8 +214,6 @@ export class YoutubeService {
     }
 
     async mergeVideoAndAudio(folderName: string, socket?: Socket): Promise<string> {
-        // await minio.fGetObject(bucketName, `${folderName}/video.mp4`, join(__dirname, "../..", "/tmp/video.mp4"));
-        // await minio.fGetObject(bucketName, `${folderName}/audio.m4a`, join(__dirname, "../..", "/tmp/audio.m4a"));
         return new Promise((resolve: (value: string | PromiseLike<string>) => void, reject: (reason?: Error) => void) => {
             let totalTime: number;
             ffmpeg(`${folderName}/video.mp4`)
@@ -235,7 +244,6 @@ export class YoutubeService {
     }
 
     async convertToMp3(folderName: string, socket?: Socket): Promise<string> {
-        // await minio.fGetObject(bucketName, `${folderName}/audio.m4a`, join(__dirname, "../..", "/tmp/audio.m4a"));
         return new Promise((resolve: (value: string | PromiseLike<string>) => void, reject: (reason?: Error) => void) => {
             let totalTime: number;
             ffmpeg(`${folderName}/audio.m4a`)
@@ -287,7 +295,6 @@ export class YoutubeService {
                     reject(err);
                 })
                 .on("end", () => {
-                    // await minio.fPutObject(bucketName, `${folderName}/${fileName}`, join(__dirname, "../..", `/tmp/${fileName}`));
                     console.log("clipMedia OK");
                     resolve("OK");
                 });
