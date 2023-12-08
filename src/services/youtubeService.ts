@@ -23,7 +23,7 @@ export class YoutubeService {
         try {
             const filters: Map<string, Map<string, FilterYtsr>> = await ytsr.getFilters(keyWord);
             const targetType: FilterYtsr = filters.get("Type").get("Video");
-            const result: Result = await ytsr(targetType.url, { limit: 98 });
+            const result: Result = await ytsr(targetType.url, { limit: 96 });
             return result;
         }
         catch (error) {
