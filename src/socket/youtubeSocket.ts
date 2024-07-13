@@ -1,13 +1,13 @@
 import type { Server, Socket } from "socket.io";
 import type { Result } from "ytsr";
-import type { videoInfo } from "ytdl-core";
+import type { videoInfo } from "@distube/ytdl-core";
 import type { IFormatData, IPreviewData, IDownloadRequest, IDownloadResponse } from "../model/youtubeModal";
 import type { Readable } from "stream";
 
 import { YoutubeService } from "../services/youtubeService";
 import { rmSync, createReadStream } from "fs";
 import { delay } from "../services/utils";
-import { getInfo } from "ytdl-core";
+import { getInfo } from "@distube/ytdl-core";
 
 export const ytSocket = (io: Server): void => {
 	try {
@@ -26,6 +26,9 @@ export const ytSocket = (io: Server): void => {
                 socket.emit("status", "正在建立預覽影片...");
                 const result: IPreviewData = await youtube.genPreview(url);
                 socket.emit("status", "預覽影片建立完成");
+                result.videoStream.on("error", (error: Error) => {
+                    console.log(error);
+                });
                 result.videoStream.on("data", (chunk: Buffer) => {
                     socket.emit("chunk", chunk);
                 });

@@ -1,5 +1,5 @@
 import type { Result, Filter as FilterYtsr } from "ytsr";
-import type { videoInfo, videoFormat, Filter } from "ytdl-core";
+import type { videoInfo, videoFormat, Filter } from "@distube/ytdl-core";
 import type { IFormatData, IPreviewData, IItagInfo, ItagTranslations, IDownloadRequest, IDownloadData } from "../model/youtubeModal";
 import type { CodecData, Progress } from "../model/ffmpegEventModal";
 import type { WriteStream } from "fs";
@@ -12,7 +12,7 @@ import { join } from "path";
 import { v4 as uuidv4 } from "uuid";
 import { minio, bucketName } from "../repository/minIO";
 import ytsr from "ytsr";
-import ytdl, { getInfo, filterFormats, chooseFormat } from "ytdl-core";
+import ytdl, { getInfo, filterFormats, chooseFormat } from "@distube/ytdl-core";
 
 const previewItag: number[] = [18, 22, 37];
 const videoItag: number[] = [37, 137, 22, 136, 18];
